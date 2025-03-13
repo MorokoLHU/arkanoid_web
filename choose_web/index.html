@@ -1,0 +1,285 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+
+        <title>選擇機器學習模型</title>
+
+        <style>
+            /* 全局設置 */
+            body {
+                font-family: 'Arial', sans-serif;
+                background-color: #f4f4f9;
+                margin: 0;
+                padding: 20px;
+                text-align: center;
+            }
+        
+            /* 容器 */
+            form {
+                background: #fff;
+                max-width: 500px;
+                margin: 0 auto;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            }
+        
+            /* 標題 */
+            h2 {
+                color: #333;
+            }
+        
+            /* 標籤美化 */
+            label {
+                font-weight: bold;
+                display: block;
+                margin: 10px 0 5px;
+                text-align: left;
+            }
+        
+            /* 下拉選單 & 輸入框 */
+            select,
+            input[type="number"] {
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 15px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                font-size: 16px;
+                transition: all 0.3s;
+            }
+        
+            /* 選單與輸入框的聚焦效果 */
+            select:focus,
+            input[type="number"]:focus {
+                border-color: #007BFF;
+                box-shadow: 0px 0px 8px rgba(0, 123, 255, 0.2);
+                outline: none;
+            }
+        
+            /* 參數區塊 */
+            div[id$="_params"] {
+                background: #f9f9f9;
+                padding: 15px;
+                border-radius: 8px;
+                box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+                margin-top: 10px;
+                display: none;
+            }
+        
+            /* 提交按鈕 */
+            input[type="submit"] {
+                background: #007BFF;
+                color: white;
+                padding: 12px;
+                font-size: 18px;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                width: 100%;
+                transition: background 0.3s ease-in-out;
+            }
+        
+            /* 按鈕懸停效果 */
+            input[type="submit"]:hover {
+                background: #0056b3;
+            }
+
+        </style>
+
+        <script>
+        function showParams() {
+            var model = document.getElementById("model").value;
+    
+            // 隱藏所有參數區塊
+            document.getElementById("knn_params").style.display = "none";
+            document.getElementById("decision_tree_params").style.display = "none";
+            document.getElementById("random_forest_params").style.display = "none";
+            document.getElementById("linerSVC_params").style.display = "none";
+            document.getElementById("linerSVR_params").style.display = "none";
+            document.getElementById("logisticRegression_params").style.display = "none";
+            document.getElementById("linear_regression_params").style.display = "none";
+            document.getElementById("SVM_params").style.display = "none";
+    
+            // 顯示對應的參數區塊
+            if (model === "KNeighbors") {
+                document.getElementById("knn_params").style.display = "block";
+            } else if (model === "DecisionTree") {
+                document.getElementById("decision_tree_params").style.display = "block";
+
+            } else if (model === "RandomForest") {
+                document.getElementById("random_forest_params").style.display = "block";
+
+            } else if (model === "LinearSVC") {
+                document.getElementById("linerSVC_params").style.display = "block";
+
+            } else if (model === "LinearSVR") {
+                document.getElementById("linerSVR_params").style.display = "block";
+
+            } else if (model === "LogisticRegression") {
+                document.getElementById("logisticRegression_params").style.display = "block";
+
+            } else if (model === "LinearRegression") {
+                document.getElementById("linear_regression_params").style.display = "block";
+
+            } else if (model === "SVM") {
+                document.getElementById("SVM_params").style.display = "block";
+            }
+        }
+        </script>
+
+    </head>
+    <body>
+        <h2>選擇機器學習模型進行訓練</h2>
+        <form action="train_model.php" method="POST">
+            <label for="model">選擇模型：</label>
+            <select name="model" id="model" onchange="showParams()">
+                <option value="KNeighbors">K Neighbors</option>
+                <option value="DecisionTree">Decision Tree</option>
+                <option value="RandomForest">Random Forest</option>
+                <option value="LinearSVC">LinearSVC</option>
+                <option value="LinearSVR">LinearSVR</option>
+                <option value="LogisticRegression">LogisticRegression</option>
+                <option value="LinearRegression">LinearRegression</option>
+                <option value="SVM">SVM</option>
+            </select>
+            <br><br>
+
+            <!-- KNeighbors 參數 -->
+            <div id="knn_params" style="display:block;">
+                <label for="task_type">Regression & Classification? </label>
+
+                <select name="task_type" id="task_type">
+                    <option value="classification">Classification</option>
+                    <option value="regression">Regression</option>
+                </select>
+                <br><br>
+
+                <label for="k_value">K 值：</label>
+                <input type="number" name="k_value" min="1" max="30" value="5">
+            </div>
+
+            <!-- DecisionTree 參數 -->
+            <div id="decision_tree_params" style="display:none;">
+                <label for="task_type">Regression & Classification? </label>
+
+                <select name="task_type" id="task_type">
+                    <option value="classification">Classification</option>
+                    <option value="regression">Regression</option>
+                </select>
+                <br><br>
+
+                <label for="max_depth">最大深度：</label>
+                <input type="number" name="max_depth" min="1" max="20"
+                    value="10">
+            </div>
+
+            <!-- RandomForest 參數 -->
+            <div id="random_forest_params" style="display:none;">
+                <label for="task_type">Regression & Classification? </label>
+
+                <select name="task_type" id="task_type">
+                    <option value="classification">Classification</option>
+                    <option value="regression">Regression</option>
+                </select>
+                <br><br>
+                <label for="max_depth">最大深度：</label>
+                <input type="number" name="max_depth" min="1" max="20"
+                    value="10">
+                <br><br>
+                <label for="random_state">random_state:</label>
+                <input type="number" name="random_state" min="1" max="100"
+                    value="10">
+                <br><br>
+
+                <label for="n_estimators">n_estimators:</label>
+                <input type="number" name="n_estimators" min="10" max="100"
+                    value="100">
+
+            </div>
+
+            <!-- linerSVC_params 參數 -->
+            <div id="linerSVC_params" style="display:none;">
+                <label for="task_type">Classification only! </label>
+                <select name="task_type" id="task_type">
+                    <option value="classification">Classification</option>
+                </select>
+                <br><br>
+
+                <label for="svc_C">C值：</label>
+                <input type="number" name="svc_C" step="0.1" min="0.1" max="10"
+                    value="1.0">
+
+            </div>
+
+            <!-- linerSVR_params 參數 -->
+            <div id="linerSVR_params" style="display:none;">
+                <label for="task_type">Regression only! </label>
+                <select name="task_type" id="task_type">
+                    <option value="regression">Regression</option>
+                </select>
+                <br><br>
+                <label for="svr_C">C值：</label>
+                <input type="number" name="svr_C" step="0.1" min="0.1" max="10"
+                    value="1.0">
+                <br><br>
+                <label for="svr_epsilon">Epsilon：</label>
+                <input type="number" name="svr_epsilon" step="0.01" min="0.01"
+                    max="1" value="0.1">
+            </div>
+
+            <!-- logisticRegression_params 參數 -->
+            <div id="logisticRegression_params" style="display:none;">
+                <label for="task_type">Classification only!</label>
+                <select name="task_type" id="task_type">
+                    <option value="classification">Classification</option>
+                </select>
+                <br><br>
+                <label for="logistic_C">C值：</label>
+                <input type="number" name="logistic_C" step="0.1" min="0.1"
+                    max="10" value="1.0">
+                <br><br>
+
+            </div>
+
+            <!-- linear_regression_params 參數 -->
+            <div id="linear_regression_params" style="display:none;">
+                <label for="task_type">Regression only!</label>
+                <select name="task_type" id="task_type">
+                    <option value="regression">Regression</option>
+                </select>
+                <br><br>
+                <label for="linear_fit_intercept">是否擷取截距：</label>
+                <select name="linear_fit_intercept">
+                    <option value="true">是</option>
+                    <option value="false">否</option>
+                </select>
+            </div>
+
+            <!-- SVM_params 參數 -->
+            <div id="SVM_params" style="display:none;">
+                <label for="task_type">Regression & Classification? </label>
+                <select name="task_type" id="task_type">
+                    <option value="classification">Classification</option>
+                    <option value="regression">Regression</option>
+                </select>
+                <br><br>
+
+                <label for="svm_kernel">選擇核函數：</label>
+                <select name="svm_kernel">
+                    <option value="linear">線性 (Linear)</option>
+                    <option value="poly">多項式 (Polynomial)</option>
+                    <option value="rbf">徑向基 (RBF)</option>
+                </select>
+                <br><br>
+                <label for="svm_C">C值：</label>
+                <input type="number" name="svm_C" step="0.1" min="0.1" max="10"
+                    value="1.0">
+            </div>
+
+            <br><br>
+            <input type="submit" value="開始訓練">
+        </form>
+    </body>
+</html>
