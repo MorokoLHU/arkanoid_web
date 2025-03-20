@@ -4,155 +4,92 @@
 <head>
     <meta charset="UTF-8">
     <title>選擇機器學習模型</title>
-
-    <style>
-        /* 全局設置 */
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 20px;
-            text-align: center;
-        }
-
-        /* 容器 */
-        form {
-            background: #fff;
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        /* 標題 */
-        h2 {
-            color: #333;
-        }
-
-        /* 標籤美化 */
-        label {
-            font-weight: bold;
-            display: block;
-            margin: 10px 0 5px;
-            text-align: left;
-        }
-
-        /* 下拉選單 & 輸入框 */
-        select,
-        input[type="number"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-            transition: all 0.3s;
-        }
-
-        input[type="number"] {
-            width: 90%;
-
-
-            display: block;
-            /* 讓 input 變成 block 元素 */
-            margin: 0 auto 0 0;
-            /* 讓它靠左對齊 */
-        }
-        
-
-        /* 選單與輸入框的聚焦效果 */
-        select:focus{
-            border-color: #007BFF;
-            width: 100%;
-            box-shadow: 0px 0px 8px rgba(0, 123, 255, 0.2);
-            outline: none;
-        }
-        input[type="number"]:focus {
-            border-color: #007BFF;
-            width: 90%;
-            box-shadow: 0px 0px 8px rgba(0, 123, 255, 0.2);
-            outline: none;
-        }
-
-        /* 參數區塊 */
-        div[id$="_params"] {
-            background: #f9f9f9;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
-            margin-top: 10px;
-            display: none;
-        }
-
-        /* 提交按鈕 */
-        input[type="submit"] {
-            background: #007BFF;
-            color: white;
-            padding: 12px;
-            font-size: 18px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            width: 100%;
-            transition: background 0.3s ease-in-out;
-        }
-
-        /* 按鈕懸停效果 */
-        input[type="submit"]:hover {
-            background: #0056b3;
-        }
-    </style>
-
+    <link href="styles.css" rel="stylesheet" type="text/css" />
     <script>
+        // 确保脚本在页面完全加载后执行
+        document.addEventListener('DOMContentLoaded', function () {
+            var allElements = document.querySelectorAll('[id]');
+
+        });
         function showParams() {
             var model = document.getElementById("model").value;
             var taskTypeSelect = document.getElementById("task_type");
             var taskTypeLabel = document.getElementById("task_type_label");
             // 隱藏所有參數區塊
 
-            var allParams = ["knn_params", "decision_tree_params", "random_forest_params", "linerSVC_params", "linerSVR_params", "logisticRegression_params", "linear_regression_params", "SVM_params"];
+            var allParams = ["knn_params",
+                "decision_tree_params",
+                "random_forest_params",
+                "linerSVC_params",
+                "linerSVR_params",
+                "logisticRegression_params",
+                "linear_regression_params",
+                "SVM_params"
+            ];
+
             allParams.forEach(function (id) {
                 document.getElementById(id).style.display = "none";
             });
+            var allIntroductions = [
+                "KNN_Introduction",
+                "DecisionTree_Introduction",
+                "RandomForest_Introduction",
+                "LinearSVC/SVR_Introduction",
+                "LogisticRegression/Linear_Introduction",
+                "SVM_Introduction"
+            ];
+
+            allIntroductions.forEach(function (id) {
+                document.getElementById(id).style.display = "none";  // 隐藏所有的介绍
+            });
+
 
             // 顯示對應的參數區塊
             if (model === "KNeighbors") {
                 document.getElementById("knn_params").style.display = "block";
+                document.getElementById("KNN_Introduction").style.display = "block";
+
             } else if (model === "DecisionTree") {
                 document.getElementById("decision_tree_params").style.display = "block";
+                document.getElementById("DecisionTree_Introduction").style.display = "block";
 
             } else if (model === "RandomForest") {
                 document.getElementById("random_forest_params").style.display = "block";
+                document.getElementById("RandomForest_Introduction").style.display = "block";
 
             } else if (model === "LinearSVC") {
                 document.getElementById("linerSVC_params").style.display = "block";
+                document.getElementById("LinearSVC/SVR_Introduction").style.display = "block";
 
             } else if (model === "LinearSVR") {
                 document.getElementById("linerSVR_params").style.display = "block";
+                document.getElementById("LinearSVC/SVR_Introduction").style.display = "block";
 
             } else if (model === "LogisticRegression") {
                 document.getElementById("logisticRegression_params").style.display = "block";
+                document.getElementById("LogisticRegression/Linear_Introduction").style.display = "block";
 
             } else if (model === "LinearRegression") {
                 document.getElementById("linear_regression_params").style.display = "block";
+                document.getElementById("LogisticRegression/Linear_Introduction").style.display = "block";
 
             } else if (model === "SVM") {
                 document.getElementById("SVM_params").style.display = "block";
+                document.getElementById("SVM_Introduction").style.display = "block";
             }
             taskTypeSelect.innerHTML = "";  // 清空原本的選項
             //<label for="task_type">Regression only! </label>
-            //<label for="task_type">Classification only! </label>
+            //<label for="task_type">classification only! </label>
 
             if (model === "LinearSVC" || model === "LogisticRegression") {
-                taskTypeSelect.innerHTML = '<option value="classification">Classification</option>';
-                taskTypeLabel.innerHTML = "Classification only!";
+                taskTypeSelect.innerHTML = '<option value="classification">classification</option>';
+                taskTypeLabel.innerHTML = "classification only!";
             } else if (model === "LinearSVR" || model === "LinearRegression") {
                 taskTypeSelect.innerHTML = '<option value="regression">Regression</option>';
                 taskTypeLabel.innerHTML = "Regression only!";
             } else {
-                taskTypeSelect.innerHTML = '<option value="classification">Classification</option><option value="regression">Regression</option>';
-                taskTypeLabel.innerHTML = 'Regression & Classification?'
+                taskTypeSelect.innerHTML = '<option value="classification">classification</option><option value="regression">Regression</option>';
+                taskTypeLabel.innerHTML = 'Regression & classification?'
             }
         }
         // 根據選擇的模型，更新 task_type 的可選項
@@ -160,113 +97,400 @@
 
 
     </script>
-
 </head>
 
 <body>
-    <h2>選擇機器學習模型進行訓練</h2>
-    <form action="train_model.php" method="POST">
-        <label for="model">選擇模型：</label>
-        <select name="model" id="model" onchange="showParams()">
-            <option value="KNeighbors">K Neighbors</option>
-            <option value="DecisionTree">Decision Tree</option>
-            <option value="RandomForest">Random Forest</option>
-            <option value="LinearSVC">LinearSVC</option>
-            <option value="LinearSVR">LinearSVR</option>
-            <option value="LogisticRegression">LogisticRegression</option>
-            <option value="LinearRegression">LinearRegression</option>
-            <option value="SVM">SVM</option>
-        </select>
-        <br><br>
-        <label for="task_type" id="task_type_label">Regression & Classification? </label>
-        <select name="task_type" id="task_type">
-            <option value="classification">Classification</option>
-            <option value="regression">Regression</option>
-        </select>
-        <br><br>
-        <!-- KNeighbors 參數 -->
-        <div id="knn_params" style="display:block;">
+    <div class="header">
+        <header style="border: 1px solid red; text-align:center ;margin:10px 0px;">HEARDER<br></header>
+        <menu style="margin:0px; float:left;border: 1px solid red;height:800px;text-align:center">MENU</menu>
+    </div>
+
+    <div class="wrapper">
+        <h2 style="text-align: left;">&nbsp;&nbsp;&nbsp;選擇機器學習模型</h2>
+        <div class="container">
+
+            <div class="formDiv">
+                <!-- 選擇模型表單 -->
+                <form action="http://192.168.1.166/choose_web/ml/choose_web/train_model.php" method="POST">
+
+                    <label for="model">選擇模型：</label>
+                    <select name="model" id="model" onchange="showParams()">
+                        <option>-</option>
+                        <option value="KNeighbors">K Neighbors</option>
+                        <option value="DecisionTree">Decision Tree</option>
+                        <option value="RandomForest">Random Forest</option>
+                        <option value="LinearSVC">LinearSVC</option>
+                        <option value="LinearSVR">LinearSVR</option>
+                        <option value="LogisticRegression">LogisticRegression</option>
+                        <option value="LinearRegression">LinearRegression</option>
+                        <option value="SVM">SVM</option>
+                    </select>
+                    <br><br>
+                    <label for="task_type" id="task_type_label">Regression & classification? </label>
+                    <select name="task_type" id="task_type">
+                        <option value="classification">classification</option>
+                        <option value="regression">Regression</option>
+                    </select>
+                    <br><br>
+                    <!-- KNeighbors 參數 -->
+                    <div id="knn_params" style="display:block;">
 
 
-            <label for="k_value">K 值：</label>
-            <input type="number" name="k_value" min="1" max="30" value="5">
+                        <label for="k_value">K 值：</label>
+                        <input type="number" name="k_value" min="1" max="30" value="5">
+                    </div>
+
+                    <!-- DecisionTree 參數 -->
+                    <div id="decision_tree_params" style="display:none;">
+                        <label for="max_depth">最大深度：</label>
+                        <input type="number" name="max_depth" min="1" max="20" value="10">
+                    </div>
+
+                    <!-- RandomForest 參數 -->
+                    <div id="random_forest_params" style="display:none;">
+
+                        <label for="max_depth">最大深度：</label>
+                        <input type="number" name="max_depth" min="1" max="20" value="10">
+                        <br>
+                        <label for="random_state">random_state:</label>
+                        <input type="number" name="random_state" min="1" max="100" value="10">
+                        <br>
+
+                        <label for="n_estimators">n_estimators:</label>
+                        <input type="number" name="n_estimators" min="10" max="100" value="100">
+
+                    </div>
+
+                    <!-- linerSVC_params 參數 -->
+                    <div id="linerSVC_params" style="display:none;">
+
+                        <label for="svc_C">C值：</label>
+                        <input type="number" name="svc_C" step="0.1" min="0.1" max="10" value="1.0">
+
+                    </div>
+
+                    <!-- linerSVR_params 參數 -->
+                    <div id="linerSVR_params" style="display:none;">
+
+                        <label for="svr_C">C值：</label>
+                        <input type="number" name="svr_C" step="0.1" min="0.1" max="10" value="1.0">
+                        <br>
+                        <label for="svr_epsilon">Epsilon：</label>
+                        <input type="number" name="svr_epsilon" step="0.01" min="0.01" max="1" value="0.1">
+                    </div>
+
+                    <!-- logisticRegression_params 參數 -->
+                    <div id="logisticRegression_params" style="display:none;">
+
+                        <label for="logistic_C">C值：</label>
+                        <input type="number" name="logistic_C" step="0.1" min="0.1" max="10" value="1.0">
+                        <br>
+
+                    </div>
+
+                    <!-- linear_regression_params 參數 -->
+                    <div id="linear_regression_params" style="display:none;">
+
+                        <label for="linear_fit_intercept">是否擷取截距：</label>
+                        <select name="linear_fit_intercept">
+                            <option value="true">是</option>
+                            <option value="false">否</option>
+                        </select>
+                    </div>
+
+                    <!-- SVM_params 參數 -->
+                    <div id="SVM_params" style="display:none;">
+
+                        <label for="svm_kernel">選擇核函數：</label>
+                        <select name="svm_kernel">
+                            <option value="linear">線性 (Linear)</option>
+                            <option value="poly">多項式 (Polynomial)</option>
+                            <option value="rbf">徑向基 (RBF)</option>
+                        </select>
+                        <br>
+                        <label for="svm_C">C值：</label>
+                        <input type="number" name="svm_C" step="0.1" min="0.1" max="10" value="1.0">
+                    </div>
+
+                    <br><br>
+                    <input type="submit" value="開始訓練">
+                </form>
+            </div>
+            <hr>
+            <!-- 不切換頁面顯示py結果 -->
+            <div class="train_result">我是PHP結果</div>
         </div>
 
-        <!-- DecisionTree 參數 -->
-        <div id="decision_tree_params" style="display:none;">
-            <label for="max_depth">最大深度：</label>
-            <input type="number" name="max_depth" min="1" max="20" value="10">
+        <!-- 模型介紹部分 -->
+        <div class="content">
+            <div class="top-banner">
+                <h2>Machine Learning Algorithms Introduction!</h2>
+            </div>
+
+            <div id="KNN_Introduction" class="Introduction" style="display:none;">
+                <h3>KNN (K-Nearest Neighbor , K-近鄰演算法)</h3>
+                <p>
+                    <br>
+
+                    屬於一種簡單且直觀的
+                    監督式學習演算法。<br>它的基本概念是對於每一個待預測的資料點，<br>根據距離選擇離它最近的K個資料點，然後根據這些鄰近的資料點的標籤進行預測。
+                    <br><br>
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/0p0o5cmgLdE?si=N51gQWVhZqfYOVhL"
+                        title="YouTube video player" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture;"
+                        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen>
+                    </iframe>
+                    <br>
+                    <a
+                        href="https://medium.com/@SCU.Datascientist/python學習筆記-knn-k-nearest-neighbor-531a95336f71">參考頁面</a>
+                </p>
+            </div>
+            <div id="DecisionTree_Introduction" class="Introduction" style="display:none;">
+
+                <h3>決策樹 (Decision Tree)</h3>
+                <p>是一種監督式學習演算法。通過將資料逐步分割成子集，最後形成樹狀結構來進行預測。<br>
+                    在樹狀結構中，每個內部節點代表一個特徵的判斷條件，而每個葉節點代表最終的預測結果。<br>
+                    <a
+                        href="https://medium.com/@SCU.Datascientist/python%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A8%98-%E6%B1%BA%E7%AD%96%E6%A8%B9-decision-tree-b9acf11f0f84">參考頁面</a>
+                </p>
+            </div>
+            <div id="RandomForest_Introduction" class="Introduction" style="display:none;">
+                <h3>隨機森林 - Random Forest</h3>
+                <p>
+                    結合多棵不同的決策樹所組成的機器學習模型。<br>
+                    屬於結合數個「弱學習器」(Decisiontree)搭配演算法(Bagging)<br>
+                    建構出的一個更強的模型：「強學習器」(Random Forest)<br><br>
+
+                    引導聚集算法 - Bootstrap Aggregation(Bagging)<br>
+                    運用在隨機森林中的一種演算法，運用自助抽樣法的方式從一個資料集分成數個子資料集。<br>
+                    這樣的做法讓隨機森林得以運用此演算法建立的子資料集為基礎建立多個決策樹。<br><br>
+
+                    可以說
+                    Bootstrap Aggregation(Bagging) + Decision Tree → Random Forest<br>
+                    引導聚集算法 + 決策樹 造就了隨機森林<br>
+
+                    是利用了集成學習(Ensemble Learning)的一種機器學習模型。<br>
+
+                </p>
+                <img style="height: 250px;  " src="image/RandomForest.png">
+                <p>
+                    實際做法為:<br>
+                    隨機從資料集中取出樣本，並以這些隨機選取的樣本先構築好數顆決策樹。<br>
+                    1.在每一個決策樹中隨機挑選特徵節點<br>
+                    2.同時在每棵決策樹以特徵分割的方式劃分此特徵節點<br>
+                    在多次執行以上1、2點的動作後，<br>
+                    在最後將所有決策樹的預測結果統整起來做結果分析。<br>
+                </p>
+                <br>
+                <a href="https://medium.com/chung-yi/ml入門-十七-隨機森林-random-forest-6afc24871857">Chung-Yi的Medium-隨機森林(Random
+                    Forest)
+
+                </a>
+                <br>
+                <a href="https://tomohiroliu22.medium.com/機器學習-學習筆記系列-37-隨機森林回歸-random-forest-regressor-a0f7a57c06c4">劉智皓
+                    (Chih-Hao Liu)的Medium-隨機森林(Random Forest)
+
+                </a> <br>
+                <a href="https://en.wikipedia.org/wiki/Bootstrap_aggregating">引導聚集算法wiki
+
+                </a>
+
+            </div>
+            <div id="LinearSVC/SVR_Introduction" class="Introduction" style="display:none;">
+
+                <h3>linerSVC - Linear Support Vector Classification & LinerSVR - Linear Support Vector Regression<br>
+                </h3>
+                <h3>線性支援向量分類/回歸</h3>
+                <p>專門用於線性問題的SVM，僅能使用線性核函數（linear kernel）基礎依賴的資料庫是Liblinear。
+                    <br>
+
+                    是一種懲罰函數和損失函數的選擇上靈活的模型，較適合大量樣本。<br>
+                    這個類別既支援稠密輸入又支援稀疏輸入，並且多類別支援是根據一對多方案處理的。<br>
+
+                    在一些大型數據中，使用或不使用非線性映射會產生類似的效果。<br>
+                    但若不計核函數的情況下，我們若是透過linerSVC/linerSVR能更快速地訓練那些龐大的資料集。<br>
+                    其中因為Liblinear庫中使用的坐標下降法(coordinate descent）
+                    <br>
+                </p>
+
+                <img style="height: 250px; width:250px; " src="image/DoordinateDescent.png">
+
+                <p>
+                    <br>使它在數據規模較大，並且問題是線性可分的情況下，<br>
+                    運算的過程會較快到達最優函式，所以相比於SVC/SVR而言效率會較高。
+                    <br>
+                    不過與SVC/SVR（基於Libsvm）不同的是，
+                    LinearSVC/SVR（基於liblinear）不提供支援向量。<br>
+                    十分類似於參數kernel= linear的SVC/SVR，但兩者之間有些許的優異性在。<br>
+                </p>
+                <h2>SVC vs LinearSVC</h2>
+                <table>
+                    <tr>
+                        <th>特性</th>
+                        <th>SVC(kernel='linear')</th>
+                        <th>LinearSVC</th>
+                    </tr>
+                    <tr>
+                        <td>支持的核函數</td>
+                        <td>只使用 `linear`</td>
+                        <td>只使用 `linear`</td>
+                    </tr>
+                    <tr>
+                        <td>適用數據規模</td>
+                        <td>小規模數據（< 1 萬）</td>
+                        <td>大規模數據（> 1 萬）</td>
+                    </tr>
+                    <tr>
+                        <td>訓練算法</td>
+                        <td>SMO（序列最小優化）</td>
+                        <td>Liblinear（坐標下降）</td>
+                    </tr>
+                    <tr>
+                        <td>訓練速度</td>
+                        <td>慢</td>
+                        <td>快</td>
+                    </tr>
+                    <tr>
+                        <td>內存消耗</td>
+                        <td>高</td>
+                        <td>低</td>
+                    </tr>
+                    <tr>
+                        <td>支持概率估計</td>
+                        <td>支持 `probability=True`</td>
+                        <td>不支持</td>
+                    </tr>
+                    <tr>
+                        <td>支持 L1 正則化</td>
+                        <td>否</td>
+                        <td>是（可選 `penalty='l1'`）</td>
+                    </tr>
+                </table>
+
+                <h2>SVR vs LinearSVR</h2>
+                <table>
+                    <tr>
+                        <th>特性</th>
+                        <th>SVR(kernel='linear')</th>
+                        <th>LinearSVR</th>
+                    </tr>
+                    <tr>
+                        <td>支持的核函數</td>
+                        <td>只使用 `linear`</td>
+                        <td>只使用 `linear`</td>
+                    </tr>
+                    <tr>
+                        <td>適用數據規模</td>
+                        <td>小規模數據（< 1 萬）</td>
+                        <td>大規模數據（> 1 萬）</td>
+                    </tr>
+                    <tr>
+                        <td>訓練算法</td>
+                        <td>SMO（序列最小優化）</td>
+                        <td>Liblinear（坐標下降）</td>
+                    </tr>
+                    <tr>
+                        <td>訓練速度</td>
+                        <td>慢</td>
+                        <td>快</td>
+                    </tr>
+                    <tr>
+                        <td>內存消耗</td>
+                        <td>高</td>
+                        <td>低</td>
+                    </tr>
+                    <tr>
+                        <td>支持 L1 正則化</td>
+                        <td>否</td>
+                        <td>是（可選 `penalty='l1'`）</td>
+                    </tr>
+                </table>
+                <a href="https://en.wikipedia.org/wiki/Coordinate_descent">Coordinate descent</a>
+                <br>
+                <a href="https://www.csie.ntu.edu.tw/~cjlin/liblinear/">LIBLINEAR A Library for Large Linear
+                    Classification
+                </a>
+                <span> & </span>
+                <a href="https://www.csie.ntu.edu.tw/~cjlin/libsvm/">LIBSVM -- A Library for Support Vector Machines</a>
+                <p>LIBLINEAR、LIBSVM兩個開源的機器學習資料庫，均由台灣大學開發被scikit-learm引進並使用</p>
+
+            </div>
+            <div id="LogisticRegression/Linear_Introduction" class="Introduction" style="display:none;">
+                <h3>Linear regression __ Logistic Regression</h3>
+                <h3>線性回歸</h3>
+                <p>線性回歸 (Linear regression)是一種監督式學習演算法，<br>將標記的資料集中學習找出一條誤差最小的直線，來預測目標變量。<br><br>
+
+                    線性回歸的公式<br>
+                </p>
+                <h3>y = &beta;<sub>0</sub> + &beta;<sub>1</sub> x</h3>
+
+                <p>
+                    y 是預測的目標的變量<br>
+                    x 為自變量或特徵<br>
+                    β~0~ 是截距項，回歸線及y軸的交點<br>
+                    β~1~ 是斜率，目標變量的變化量<br>
+                </p>
+
+                <h3>邏輯回歸(分類)</h3>
+                <p>
+                    與線性回歸一樣都使用線性方程來描述特徵及目標變量。<br>
+                    邏輯回歸不同的是目標變量y的值介於0~1預測的結果為機率值因此主要用於分類問題，尤其是二分類問題。
+                </p>
+                <a href="https://medium.com/@jason8410271027/學習筆記-線性回歸-linear-regression-38b17484ee0a">Jason的Medium-線性回歸
+                </a>
+
+                <br>
+
+                <a
+                    href="https://medium.com/jameslearningnote/資料分析-機器學習-第3-3講-線性分類-邏輯斯回歸-logistic-regression-介紹-a1a5f47017e5">
+                    Yeh James的Medium-邏輯斯回歸(Logistic Regression) 介紹
+                </a>
+            </div>
+            <div id="SVM_Introduction" class="Introduction" style="display:none;">
+                <h3>SVM (Support-vector-machine, 支援向量機)</h3>
+                <p>
+                    是一種監督式學習演算法適用於回歸與分類問題。<br>
+                    特別是處理高維度及具有非線性邊界的分類問題。<br>
+                    其概念就是將低維度空間線性不可分的樣本映射到高維度空間，並找到一個超平面將樣本有效分割。<br>
+                    並使該超平面與資料點的間隔(Margin)最大化，用來區分不同類別的資料點。
+                </p>
+                <img style="height: 400px; width:400px; " src="image/SVM1.png">
+                <img style="height: 400px; width:400px; " src="image/SVM2.png">
+                <p>
+                    非線性可分問題SVM可以通過使用核函數(Kernel Function)<br>
+                    將資料映射到高維度的方式找到一個最適的超平面。<br>
+                    常見核函數:
+                </p>
+                <div style="width: 40%;margin:auto; font-size:large">
+
+                    <ul>
+                        <li>線性核 (Linear Kernel)</li>
+                        <li>多項式核 (Polynomial Kernel)</li>
+                        <li>徑向基核 (Radial Basis Function, RBF Kernel)</li>
+                    </ul>
+
+                </div>
+                <a href="https://medium.com/@SCU.Datascientist/機器學習筆記-支援向量機-support-vector-machine-80ad4266d592">
+                    Alex lin的Medium 支援向量機(Support Vector Machine)
+                </a>
+                <br>
+                <a
+                    href="https://medium.com/jameslearningnote/資料分析-機器學習-第3-4講-支援向量機-support-vector-machine-介紹-9c6c6925856b">
+                    Yeh James的Medium 支援向量機(Support Vector Machine)介紹
+                </a>
+                <br>
+                <a href="https://pyecontech.com/2020/03/24/svm/">
+                    PyInvest [機器學習首部曲] 支援向量機 SVM
+                </a>
+                <br>
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/9sVFd1QGOjM?si=XXi9hvj7j8V7cdRv"
+                    title="YouTube video player" frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
         </div>
 
-        <!-- RandomForest 參數 -->
-        <div id="random_forest_params" style="display:none;">
-
-            <label for="max_depth">最大深度：</label>
-            <input type="number" name="max_depth" min="1" max="20" value="10">
-            <br><br>
-            <label for="random_state">random_state:</label>
-            <input type="number" name="random_state" min="1" max="100" value="10">
-            <br><br>
-
-            <label for="n_estimators">n_estimators:</label>
-            <input type="number" name="n_estimators" min="10" max="100" value="100">
-
-        </div>
-
-        <!-- linerSVC_params 參數 -->
-        <div id="linerSVC_params" style="display:none;">
-
-            <label for="svc_C">C值：</label>
-            <input type="number" name="svc_C" step="0.1" min="0.1" max="10" value="1.0">
-
-        </div>
-
-        <!-- linerSVR_params 參數 -->
-        <div id="linerSVR_params" style="display:none;">
-
-            <label for="svr_C">C值：</label>
-            <input type="number" name="svr_C" step="0.1" min="0.1" max="10" value="1.0">
-            <br><br>
-            <label for="svr_epsilon">Epsilon：</label>
-            <input type="number" name="svr_epsilon" step="0.01" min="0.01" max="1" value="0.1">
-        </div>
-
-        <!-- logisticRegression_params 參數 -->
-        <div id="logisticRegression_params" style="display:none;">
-
-            <label for="logistic_C">C值：</label>
-            <input type="number" name="logistic_C" step="0.1" min="0.1" max="10" value="1.0">
-            <br><br>
-
-        </div>
-
-        <!-- linear_regression_params 參數 -->
-        <div id="linear_regression_params" style="display:none;">
-
-            <label for="linear_fit_intercept">是否擷取截距：</label>
-            <select name="linear_fit_intercept">
-                <option value="true">是</option>
-                <option value="false">否</option>
-            </select>
-        </div>
-
-        <!-- SVM_params 參數 -->
-        <div id="SVM_params" style="display:none;">
-
-            <label for="svm_kernel">選擇核函數：</label>
-            <select name="svm_kernel">
-                <option value="linear">線性 (Linear)</option>
-                <option value="poly">多項式 (Polynomial)</option>
-                <option value="rbf">徑向基 (RBF)</option>
-            </select>
-            <br><br>
-            <label for="svm_C">C值：</label>
-            <input type="number" name="svm_C" step="0.1" min="0.1" max="10" value="1.0">
-        </div>
-
-        <br><br>
-        <input type="submit" value="開始訓練">
-    </form>
+    </div>
 </body>
 
 </html>

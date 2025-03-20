@@ -3,6 +3,7 @@
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // 取得使用者選擇的模型
     $model = $_POST["model"];
+    
     $task_type = $_POST["task_type"];
     // 設定 Python 檔案路徑
     $python_scripts = [
@@ -39,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             "regression" => "../model_train_SVM_regression.py"
         ]
     ];
-    
+    $script_path = $python_scripts[$model][$task_type];
 
     if (isset($python_scripts[$model][$task_type])) {
         $script_name = $python_scripts[$model][$task_type]; // 取得對應的 Python 腳本
@@ -86,11 +87,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $params[] = escapeshellarg($svm_kernel);
             $params[] = escapeshellarg($svm_C);
         }
-    
+        
+        
         // 執行 Python 腳本，並傳遞參數
-        $command = "python3 " . escapeshellarg($script_name) . " " . implode(" ", $params);
+        $command = "C:\Users\Moroco\Documents\python\FUNAI\.venv\Scripts\python.exe " . escapeshellarg($script_name) . " " . implode(" ", $params);
+        echo $command;
         $output = shell_exec($command);
-    
+        
         echo "<h3>訓練結果：</h3>";
         echo "<pre>$output</pre>";
     } else {
