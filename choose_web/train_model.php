@@ -95,7 +95,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $output = shell_exec($command);
         
         echo "<h3>訓練結果：</h3>";
-        echo "<pre>$output</pre>";
+        echo "<p>$output</p>";
     } else {
         echo "<h3>錯誤：無效的模型選擇！</h3>";
     }
