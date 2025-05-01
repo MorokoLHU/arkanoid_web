@@ -5,13 +5,19 @@
     <meta charset="UTF-8">
     <title>選擇機器學習模型</title>
     <link href="styles.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+
         // 確保脚本在頁面完全加载後执行
         document.addEventListener('DOMContentLoaded', function () {
             var allElements = document.querySelectorAll('[id]');
             TrainStopPOST();
             CreateStopPOST();
             MenuBtnactive();
+            RUNMLplay();
+            fetchpylocationset()
+            downloadcheck()
+
         });
         function showParams() {
             var model = document.getElementById("model").value;
@@ -109,10 +115,12 @@
                 })
                     .then(response => response.text()) // 假設 train_model.php 回傳的是HTML或純文字
                     .then(data => {
-                        CreateResultDiv.innerHTML = data; // 訓練完成後，把內容放進來
+                        alert(data); // 訓練完成後，把內容放進來
+                        CreateResultDiv.innerHTML = '<div style="text-align: center;"><p>✅已成功！<br</p></div>';
                     })
             });
         }
+        //fetch將PHP結果不跳轉頁面
         function TrainStopPOST() {
             document.getElementById('trainForm').addEventListener('submit', function (event) {
                 event.preventDefault(); // 阻止表單預設送出行為
@@ -135,6 +143,7 @@
                         .then(response => response.text()) // 假設 train_model.php 回傳的是HTML或純文字
                         .then(data => {
                             trainResultDiv.innerHTML = data; // 訓練完成後，把內容放進來
+                            happyturn();
                         })
                         .catch(error => {
                             console.error('發生錯誤:', error);
@@ -147,28 +156,37 @@
         function MenuBtnactive() {
             const menuButtons = document.querySelectorAll('.menu-button');
             const topBanner = document.getElementById('top_banner');
+            const wrappertext = document.getElementById('wrappertext')
             menuButtons.forEach(button => {
                 button.addEventListener('click', function () {
                     // 先清除所有按鈕的 active
                     menuButtons.forEach(btn => btn.classList.remove('active'));
                     this.classList.add('active');
                     // 根據按的按鈕設定要顯示的內容＆TopBanner文字
-                    if (this.id === "chooseModelBtn") {
+                    if (this.id === "Presetsetting") {
+                        showSections(["Presetsettingsection"]);
+                        wrappertext.innerHTML = "前言";
+                        topBanner.innerHTML = "以上請先閱讀";
+                    }
+                    else if (this.id === "chooseModelBtn") {
                         showSections(["ChooseModel", "IntroductionSection"]);
                         topBanner.innerHTML = "Machine Learning Algorithms Introduction!";
+                        wrappertext.innerHTML = "選擇機器學習模型";
                     } else if (this.id === "runModelBtn") {
                         showSections(["DragModel", "ShowCSV"]);
+                        wrappertext.innerHTML = "以Pygame-Arkanoid去做模型的學習成果展示!!";
                         topBanner.innerHTML = "結果展示";
                     } else if (this.id === "RANKModelBtn") {
-                        // 如果還有第三種，自己定義
+                        // 如果還有第三種
                         showSections(["RANKSection"]);
-                        topBanner.innerHTML = "模型排名結果";
+                        wrappertext.innerHTML = "各模型的結果展示";
+                        topBanner.innerHTML = "模型排名";
                     }
                 });
             });
             function showSections(sectionIds) {
                 // 先隱藏所有主要區塊
-                const allSections = ["ChooseModel", "DragModel", "IntroductionSection", "ShowCSV", "RANKSection"];
+                const allSections = ["Presetsettingsection", "ChooseModel", "DragModel", "IntroductionSection", "ShowCSV", "RANKSection"];
                 allSections.forEach(id => {
                     const el = document.getElementById(id);
                     if (el) {
@@ -180,7 +198,7 @@
                     const el = document.getElementById(id);
                     if (el) {
                         // IntroductionSection 用 block，其他用 flex
-                        el.style.display = (id === "IntroductionSection") ? "block" : "flex";
+                        el.style.display = (id === "IntroductionSection" || id === "ShowCSV" || id === "RANKSection") ? "block" : "flex";
                     }
                 });
             }
@@ -264,25 +282,203 @@
             }
         }
         // 抓取save中所擁有的檔案名稱以JSON存取，轉換為選項，並加上刪除按鈕
+        async function fetchpylocationset() {
+            document.getElementById('Pylocation_set').addEventListener('submit', function (e) {
+                e.preventDefault(); // 阻止預設提交
+
+                const pathValue = document.getElementById('Pylocation').value;
+
+                fetch('pylocationset.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'Pylocation=' + encodeURIComponent(pathValue)
+                })
+                    .then(response => response.text())
+                    .then(result => {
+                        alert(result);
+                    })
+                    .catch(error => {
+                        alert('發生錯誤：' + error);
+                    });
+            });
+        }
+
+        function RUNMLplay() {
+            document.getElementById('MLplayform').addEventListener('submit', function (event) {
+                event.preventDefault(); // 阻止表單預設送出行為
+                const MLplayResultDiv = document.getElementById('ShowCSV');
+                MLplayResultDiv.innerHTML = '<div style="text-align: center;"><img class="" src="image/arkanoid-schematic.gif" alt="arkanoid-schematic"><p>🚀 (示意圖) 實際成果生成中，請稍待片刻...</p></div>';// 顯示loading提示
+                const formData = new FormData(this);
+                fetch('RunMLplay.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => response.text()) // 假設 train_model.php 回傳的是HTML或純文字
+                    .then(data => {
+                        MLplayResultDiv.innerHTML = data; // 訓練完成後，把內容放進來
+                    })
+            });
+        }
+        let myChart; // 定義為全域變數
+
+        function loadRank() {
+            resetCanvas()
+            // 1. 載入表格資料
+            fetch('generate_rank.php')
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('RankTable').innerHTML = html;
+                });
+
+            // 2. 載入圖表資料
+            fetch('get_data.php')
+                .then(response => response.json())
+                .then(data => {
+                    const ctx = document.getElementById('myChart').getContext('2d');
+
+                    // 如果已存在圖表，先摧毀
+                    if (myChart instanceof Chart) {
+                        myChart.destroy();
+                    }
+
+                    // 建立新圖表
+                    myChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: data.labels,
+                            datasets: [
+                                {
+                                    label: '執行次數',
+                                    data: data.total_runs,
+
+                                    borderColor: 'rgba(54, 162, 235, 1)',
+                                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                    yAxisID: 'y2'
+                                },
+                                {
+
+                                    label: '通關次數',
+                                    data: data.passtimes,
+                                    borderColor: 'rgba(75, 192, 192, 1)',
+                                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                    yAxisID: 'y2'
+                                },
+                                {
+
+                                    label: '通關率',
+                                    data: data.pass_rate,
+                                    type: 'line',
+                                    borderColor: 'rgba(255, 99, 132, 0.5)',
+                                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                                    yAxisID: 'y1'
+                                },
+
+                            ]
+                        },
+                        options: {
+                            responsive: false,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y1: {
+                                    position: 'right',
+                                    beginAtZero: true,
+                                    title: { display: true, text: '比率 (%)' }
+                                },
+                                y2: {
+                                    position: 'left',
+                                    beginAtZero: true,
+                                    title: { display: true, text: '次數' },
+                                    grid: { drawOnChartArea: false }
+                                }
+                            }
+                        }
+                    });
+                });
+        }
+        function resetCanvas() {
+            const oldCanvas = document.getElementById("myChart");
+            if (oldCanvas) {
+                const parent = oldCanvas.parentNode;
+                oldCanvas.remove();
+
+                const newCanvas = document.createElement("canvas");
+                newCanvas.id = "myChart";
+                newCanvas.className = "myChart";
+                parent.appendChild(newCanvas);
+            }
+        }
+        function downloadcheck() {
+
+            document.getElementById('downloadcheck').addEventListener('change', function () {
+                const formDiv = document.getElementById('Pylocation_set');
+                formDiv.style.display = this.checked ? 'none' : 'block';
+            });
+
+        }
+        function happyturn() {
+            let flipped = false;
+            setInterval(() => {
+                flipped = !flipped;
+                document.getElementById('happyturn').style.transform = flipped ? 'scaleX(-1)' : 'scaleX(1)';
+            }, 1000);
+        }
+
     </script>
 </head>
 
 <body>
     <div class="header">
-        <header style="border: 1px solid red; text-align:center ;margin:10px 0px;">HEARDER<br></header>
+        <header><img class="NETicon" src="image/NETICON.jpg"><span>Machine Learning</span></header>
+
 
     </div>
     <div class="menu-container">
         <h2 class="menu-title">Menu</h2>
+        <button class="menu-button" id="Presetsetting">Preset settings</button>
         <button class="menu-button" id="chooseModelBtn">Choose Model</button>
         <button class="menu-button" id="runModelBtn" onclick="fetchFileNames()">Run Model</button>
-        <button class="menu-button" id="RANKModelBtn">Model RANK</button>
+        <button class="menu-button" id="RANKModelBtn" onclick="loadRank()">Model RANK</button>
     </div>
 
     <div class="wrapper">
-        <h2 style="text-align: left;">&nbsp;&nbsp;&nbsp;選擇機器學習模型</h2>
+        <h2 id="wrappertext" style="text-align: left;">&nbsp;&nbsp;&nbsp;前言</h2>
         <div class="container">
-            <div class="ChooseModel" id="ChooseModel" style="display: flex;">
+            <div class="Presetsettingsection" id="Presetsettingsection" style="display: flex;">
+
+                <article style="display: flex; align-items: flex-start; gap: 20px; max-width: 100%;">
+
+                    <!-- 圖片區 -->
+                    <img src="image/teach.png" style="width: 120px; height: auto; flex-shrink: 0; ">
+
+                    <!-- 文字 + 表單區 -->
+                    <div style="flex: 1; min-width: 0; word-wrap: break-word;">
+                        <p>若您是下載的User開始使用本專案之前請確保</p>
+                        <p>1.本電腦有安裝3.9.x版本的python&nbsp;&nbsp;&nbsp;&nbsp;
+                            <a href="https://www.python.org/downloads/release/python-3913/">Python3.9</a>
+                        </p>
+                        <p>2.已在3.9.x的python環境中運用pip安裝好mlgame&nbsp;&nbsp;&nbsp;
+                            <a href="https://pypi.org/project/mlgame/">MLgame-Release</a>
+                        </p>
+                        <p>3.確保運行此網頁時可以正常運作phpScript</p>
+                        <p>無下載專案動作請跳過此頁面</p>
+                        <label><input type="checkbox" id="downloadcheck" name="download">不需進行設定</label>
+                        <form id="Pylocation_set" action="pylocationset.php" method="POST">
+                            <p>以上三點OK請於下方設定存在MLGAME的3.9.x的python的路徑。</p>
+                            <p>(僅一次即可)</p>
+
+
+
+                            <label for="Pylocation">輸入路徑：</label>
+                            <input type="text" id="Pylocation" name="Pylocation" placeholder="安裝mlgame的python3.9路徑">
+                            <input type="submit" value="設定您的python路徑">
+                        </form>
+                    </div>
+                </article>
+
+            </div>
+            <div class="ChooseModel" id="ChooseModel" style="display: none;">
                 <div class="formDiv">
                     <!-- 選擇模型表單 -->
                     <form id="trainForm" action="train_model.php" method="POST">
@@ -396,23 +592,75 @@
                 <!-- 不切換頁面顯示py結果 -->
             </div>
             <div class="DragModel" id="DragModel" style="display: none;">
+
                 <!-- 左邊的拖拉區域 -->
                 <div class="drag-container" id="dragContainer">
                     <!-- 這裡會動態插入檔案名稱 -->
                 </div>
 
                 <!-- 右邊的表單區域 -->
-                <div class="dragform-container" id="DragformContainer">
+                <div class="dragform-container" id="DragformContainer" style="position:relative;">
                     <form id="fileForm" action="CreatePlayPY.php" method="POST">
                         <div class="Dragform-field">
                             <label for="fileInput">選擇檔案：</label>
                             <input type="text" id="fileInput" name="fileInput" placeholder="拖拉檔案名稱到這裡" readonly>
-                            <input type="submit" value="測試精準度">
+                            <label>每次運行的時間不超過:&nbsp;<input type="number" name="timelimit" min="1" max="20"
+                                    value="10">秒<br />(使AI在秒數到了之後停止運作)</label>
+                            <span>以上都設定好了!</span><input type="checkbox" required>
+                            <label></label>
+                            <input type="submit" value="生成該模型專用MLplay檔案">
                         </div>
-                        <!-- 你可以根據需要添加更多的表單欄位 -->
                     </form>
-                </div>
+                    <div class="MLplay">
+                        <form id="MLplayform" class="MLplayform" action="RunMLplay.php" method="POST">
+                            <p>MLplay生成完畢之後 在使用下方的功能喔!!!</p>
+                            <input type="text" id="fileInputTexthold" name="fileInputTexthold" readonly
+                                style="display: none;">
+                            <label>模型總共要執行幾次:&nbsp;<input type="number" name="times" min="1" max="10" value="1"></label>
+                            <label>要運行的關卡是?</label>
+                            <div class="stage-selector">
+                                <!-- Stage 1 -->
+                                <input type="radio" name="selectedStage" value="1" id="stage1" class="stage-radio"
+                                    checked>
+                                <label for="stage1" class="stage-label">
+                                    <div class="stage-image" style="background-position: 0% 0%;"></div>
+                                    關卡 1
+                                </label>
 
+                                <!-- Stage 2 -->
+                                <input type="radio" name="selectedStage" value="2" id="stage2" class="stage-radio">
+                                <label for="stage2" class="stage-label">
+                                    <div class="stage-image" style="background-position: 25% 0%;"></div>
+                                    關卡 2
+                                </label>
+
+                                <!-- Stage 3 -->
+                                <input type="radio" name="selectedStage" value="3" id="stage3" class="stage-radio">
+                                <label for="stage3" class="stage-label">
+                                    <div class="stage-image" style="background-position: 50% 0%;"></div>
+                                    關卡 3
+                                </label>
+
+                                <!-- Stage 4 -->
+                                <input type="radio" name="selectedStage" value="4" id="stage4" class="stage-radio">
+                                <label for="stage4" class="stage-label">
+                                    <div class="stage-image" style="background-position: 75% 0%;"></div>
+                                    關卡 4
+                                </label>
+
+                                <!-- Stage 5 -->
+                                <input type="radio" name="selectedStage" value="5" id="stage5" class="stage-radio">
+                                <label for="stage5" class="stage-label">
+                                    <div class="stage-image" style="background-position: 100% 0%;"></div>
+                                    關卡 5
+                                </label>
+                            </div>
+                            <input type="submit" value="運行成果">
+                        </form>
+                    </div>
+                    <a style="position: absolute;right: 10px;bottom: 10px;"
+                        href="https://www.pygame.org/docs/">Pygame©</a>
+                </div>
 
             </div>
         </div>
@@ -421,10 +669,9 @@
         <!-- 模型介紹部分 -->
         <div class="content">
             <div class="top-banner">
-                <h2 id="top_banner">Machine Learning Algorithms Introduction!</h2>
+                <h2 id="top_banner">以上請先閱讀</h2>
             </div>
-
-            <div id="IntroductionSection" style="display:block;">
+            <div id="IntroductionSection" style="display:none;">
 
                 <div id="KNN_Introduction" class="Introduction" style="display:none;">
                     <h3>KNN (K-Nearest Neighbor , K-近鄰演算法)</h3>
@@ -692,7 +939,13 @@
                         referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                 </div>
             </div>
-            <div id="ShowCSV" style="display: none;">TTTT</div>
+            <div id="ShowCSV" class="Nowcsvtable" style="display: none;">記得要先案生成再案運行成果喔</div>
+            <div id="RANKSection" class="RANKSection" style="display: none;">
+                <p>RE=>回歸 CL=>分類</p>
+                <div id="RankTable" class="RandTable"></div>
+                <br>
+                <canvas class="myChart" id="myChart"></canvas>
+            </div>
         </div>
     </div>
     <script>
@@ -700,6 +953,7 @@
 
         const DragformContainer = document.getElementById('DragformContainer');
         const fileInput = document.getElementById('fileInput');
+        const fileInputTexthold = document.getElementById('fileInputTexthold');
 
         DragformContainer.addEventListener('dragover', (e) => {
             e.preventDefault();  // 讓區域可以接受拖拉
@@ -709,7 +963,9 @@
             e.preventDefault();
             const fileName = e.dataTransfer.getData('text/plain');  // 取得拖拉的檔案名稱
             fileInput.value = fileName;  // 填入表單欄位
+            fileInputTexthold.value = fileName;
         });
+
 
 
     </script>

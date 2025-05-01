@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (isset($python_scripts[$model][$task_type])) {
         $script_name = $python_scripts[$model][$task_type]; // 取得對應的 Python 腳本
-        echo "即將執行的 Python 腳本：" . $script_name . "<br>";
+
         
         // 確保腳本存在
         if (!file_exists($script_path)) {
@@ -88,14 +88,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $params[] = escapeshellarg($svm_C);
         }
         
-        
+        $Pylocation = trim(file_get_contents("user_pypath.txt"));
+
         // 執行 Python 腳本，並傳遞參數
-        $command = "C:\Users\Moroco\Documents\python\FUNAI\.venv\Scripts\python.exe " . escapeshellarg($script_name) . " " . implode(" ", $params);
-        echo $command;
+        $command = "\"{$Pylocation}\" " . escapeshellarg($script_name) . " " . implode(" ", $params);
         $output = shell_exec($command);
         
         echo "<h3>訓練結果：</h3>";
         echo "<p>$output</p>";
+        echo "<br><p>🚩點擊Run Model去試試吧!<br><img id=\"happyturn\"class=\"happyturn\" src=\"image/Happy.png\"></p>";
     } else {
         echo "<h3>錯誤：無效的模型選擇！</h3>";
     }

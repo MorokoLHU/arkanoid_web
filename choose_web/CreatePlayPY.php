@@ -6,6 +6,7 @@ header('Content-Type: text/html; charset=utf-8');
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fileInput'])) {
     // 抓到使用者從 form 傳來的檔案名稱
     $modelFileName = trim($_POST['fileInput']);  // 去除空白
+    $timelimit = (trim($_POST['timelimit'])) . "00" ;  // 去除空白
     $Check = explode('_', $modelFileName);
     $modelFileName = $modelFileName . ".pickle";
     if (empty($modelFileName)) {
@@ -23,9 +24,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fileInput'])) {
     }
 
     $pyFilePath = $saveDir . '/MLPlay.py';
-    if(in_array('CL', $Check)){
+    if (in_array('CL', $Check)) {
         $pyContent = <<<PYTHON
         #CL
+        import time
         import pickle
         import csv
         import os
@@ -41,14 +43,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fileInput'])) {
                 self.Nowresult_path = os.path.join(self.result_dir, "Nowresult.csv")
                 self.ball_served = False
                 self.previous_ball = (0, 0)
+
+                self.start_time = time.time()
                 with open(os.path.join(os.path.dirname(__file__), "save", self.model_name), "rb") as f:
                     self.model = pickle.load(f)
-            
+
             def update(self, scene_info, *args, **kwargs):
+                # 當遊戲結束或遊戲通過時，要求調用 `reset()` 以開始新的一輪
                 if scene_info["status"] == "GAME_OVER" or scene_info["status"] == "GAME_PASS":
                     self.save_model_name()
                     return "RESET"
-                
+                if scene_info["frame"] >= {$timelimit}:
+                    return "RESET"
+
                 if not self.ball_served:
                     self.ball_served = True
                     command = "SERVE_TO_RIGHT"
@@ -95,8 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fileInput'])) {
                         writer.writeheader()
                     writer.writerow(result_data)
         PYTHON;
-        
-    }else{
+    } else {
         $pyContent = <<<PYTHON
         #RE
         import pickle
@@ -113,7 +119,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fileInput'])) {
                 self.result_dir = os.path.join(os.path.dirname(__file__), "..", "result")
                 os.makedirs(self.result_dir, exist_ok=True)
                 self.result_path = os.path.join(self.result_dir, "model_name.csv")
-                
                 self.ball_served = False
                 self.previous_ball = (0, 0)
         
@@ -126,7 +131,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fileInput'])) {
                 if scene_info["status"] == "GAME_OVER" or scene_info["status"] == "GAME_PASS":
                     self.save_model_name()
                     return "RESET"
-                
+                if scene_info["frame"] >= {$timelimit}:
+                    return "RESET"
+
+
                 if not self.ball_served:
                     self.ball_served = True
                     command = "SERVE_TO_RIGHT"
@@ -184,29 +192,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fileInput'])) {
     }
 
     // Python內容，插入 modelFileName
-    
+
     // 寫入 Python 檔案
     file_put_contents($pyFilePath, $pyContent);
-    echo "✅ MLPlay.py 已建立成功！<br>";
+    echo "✅ MLPlay.py 已建立成功！";
 }
 
-//     // 【可選】自動執行 Python 程式
-//     // 注意！這個地方要你的伺服器有安裝 python
-//     $pythonPath = 'python3'; // 依照你的伺服器設定，可能是 python 或 python3
-//     $command = escapeshellcmd("$pythonPath $pyFilePath");
-//     $output = [];
-//     $return_var = 0;
-//     exec($command, $output, $return_var);
-
-//     // 顯示 Python 執行結果
-//     if ($return_var === 0) {
-//         echo "🎯 執行成功！輸出結果：<br>";
-//         echo nl2br(htmlspecialchars(implode("\n", $output)));
-//     } else {
-//         echo "⚠️ 執行失敗，請檢查 Python 錯誤。";
-//     }
-// } else {
-//     echo "請透過正確的表單提交。";
-// }
-//
-?>
